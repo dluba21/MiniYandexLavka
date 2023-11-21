@@ -1,0 +1,33 @@
+services:
+  postgres:
+    container_name: MiniYandexLavkaDB
+    image: postgres:latest
+    environment:
+#      POSTGRES_DB: "admin"
+#      POSTGRES_USER: "admin"
+#      POSTGRES_PASSWORD: "admin"
+#      PGDATA: "./db_data"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA}
+    ports:
+      - "10882:5432"
+    volumes:
+          - ./db/db-data:/data
+          - ./db/sql-init/00.000.01_created_initial_tables.sql:/docker-entrypoint-initdb.d/00.000.01_created_initial_tables.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+volumes:
+  db:
+#    external: true
