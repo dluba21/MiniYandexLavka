@@ -24,10 +24,7 @@ public class CourierHandlerImpl implements CourierHandler {
         this.courierRepository = courierRepository;
     }
 
-    public List<CourierDTO> getCouriers(final CouriersFilterDTO filter) {
-
-
-        courierRepository.findAll();
+    public List<CourierDTO> getCouriersInfo(final CouriersFilterDTO filter) {
         return courierRepository.findAllWithLimitAndOffset(
                     filter.getLimit(),
                     filter.getOffset())
@@ -36,5 +33,17 @@ public class CourierHandlerImpl implements CourierHandler {
                 .collect(Collectors.toList());
     }
 
+    public CourierDTO getCourierInfo(final Long courierId) {
+        return courierRepository.findById(courierId)
+                .map(courierMapper::entityToDto).orElse(null);
+    }
 
+    @Override
+    public void addCouriers(final List<CourierDTO> courierDTOS) {
+        courierRepository.saveAll(
+                courierDTOS.stream()
+                .map(courierMapper::dtoToEntity)
+                .collect(Collectors.toList())
+        );
+    }
 }
